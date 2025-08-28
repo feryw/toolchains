@@ -27,8 +27,8 @@ jobs:
 
             # Download and extract GCC source
             wget https://releases.linaro.org/components/toolchain/gcc-linaro/7.5-2019.12/gcc-linaro-7.5-2019.12.tar.xz
-            tar -xf gcc-linaro-7.5.0-2019.12.tar.xz
-            cd gcc-linaro-7.5.0-2019.12
+            tar -xf gcc-linaro-7.5-2019.12.tar.xz
+            cd gcc-linaro-7.5-2019.12
             ./contrib/download_prerequisites
             cd ..
 
