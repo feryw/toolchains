@@ -16,13 +16,13 @@ jobs:
         id: cache-gcc
         uses: actions/cache@v4
         with:
-          path: gcc-linaro-7.5.0-2019.12.tar.xz
-          key: gcc-linaro-7.5.0-2019.12
+          path: gcc-linaro-7.5-2019.12.tar.xz
+          key: gcc-linaro-7.5-2019.12
 
       - name: Download GCC source if missing
         if: steps.cache-gcc.outputs.cache-hit != 'true'
         run: |
-          wget https://releases.linaro.org/components/toolchain/gcc-linaro/7.5-2019.12/gcc-linaro-7.5.0-2019.12.tar.xz
+          wget https://releases.linaro.org/components/toolchain/gcc-linaro/7.5-2019.12/gcc-linaro-7.5-2019.12.tar.xz
 
       - name: Set up AArch64 environment
         uses: uraimo/run-on-arch-action@v2
