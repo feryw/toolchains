@@ -1,0 +1,54 @@
+name: Build GCC 7.5 ARMv7 Toolchain
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build-gcc:
+    runs-on: ubuntu-22.04   # GitHub runners are x86_64, but we’ll use an aarch64 VM container
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up AArch64 environment
+        uses: uraimo/run-on-arch-action@v2
+        with:
+          arch: aarch64
+          distro: ubuntu22.04
+          githubToken: ${{ github.token }}
+          run: |
+            apt-get update
+            apt-get install -y \
+              build-essential wget curl xz-utils \
+              flex bison texinfo gawk libgmp-dev libmpfr-dev \
+              libmpc-dev zlib1g-dev
+
+            # Download and extract GCC source
+            wget https://releases.linaro.org/components/toolchain/gcc-linaro/7.5-2019.12/gcc-linaro-7.5.0-2019.12.tar.xz
+            tar -xf gcc-linaro-7.5.0-2019.12.tar.xz
+            cd gcc-linaro-7.5.0-2019.12
+            ./contrib/download_prerequisites
+            cd ..
+
+            # Build GCC
+            mkdir build && cd build
+            ../gcc-linaro-7.5.0-2019.12/configure \
+              --prefix=/opt/gcc-armv7 \
+              --target=arm-linux-gnueabihf \
+              --enable-languages=c,c++ \
+              --disable-multilib \
+              --disable-nls
+
+            make -j$(nproc)
+            make install
+
+            # Package the toolchain
+            tar -C /opt -czf /tmp/gcc-armv7-7.5-aarch64-host.tar.gz gcc-armv7
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gcc-armv7-7.5-aarch64-host
+          path: /tmp/gcc-armv7-7.5-aarch64-host.tar.gz
